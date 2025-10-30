@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 
-print("🚀 ЗАПУСК ПРОЕКТА MNIST + Grad-CAM")
+print("🚀 ЗАПУСК ПРОЕКТА")
 print("=" * 50)
 
 # Девайс и сиды для воспроизводимости
@@ -17,7 +17,7 @@ torch.manual_seed(42)
 np.random.seed(42)
 random.seed(42)
 
-# Улучшенная CNN модель для лучшей точности
+# CNN модель
 class ImprovedCNN(nn.Module):
     def __init__(self):
         super(ImprovedCNN, self).__init__()
@@ -134,7 +134,7 @@ class GradCAM:
 
 # Функция обучения
 def train_model():
-    print("📚 Загружаем данные MNIST...")
+    print("Загружаем данные MNIST...")
     
     transform = transforms.Compose([
         transforms.ToTensor(),
@@ -153,7 +153,7 @@ def train_model():
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.7)
     
-    print("🧠 Обучаем модель...")
+    print("Обучаем модель...")
     
     # Инициализируем fc1 с помощью пробного forward pass
     with torch.no_grad():
@@ -192,8 +192,7 @@ def train_model():
         accuracy = 100. * correct / len(test_loader.dataset)
         print(f'Эпоха {epoch+1}, Точность: {accuracy:.2f}%')
         
-        if accuracy >= 80.0:
-            print(f'✅ Достигнута требуемая точность 80%!')
+        if accuracy >= 80.0:  # Проверка необходимй точности
             break
     
     # Финальное тестирование
@@ -214,11 +213,10 @@ def train_model():
     accuracy = 100. * correct / len(test_loader.dataset)
     
     print(f'\n✅ Обучение завершено!')
-    print(f'📊 Финальная точность на тесте: {accuracy:.2f}%')
+    print(f'Финальная точмность на тесте: {accuracy:.2f}%')
     
     # Сохраняем модель
     torch.save(model.state_dict(), 'mnist_cnn.pth')
-    print('💾 Модель сохранена')
     
     return model
 
@@ -295,7 +293,7 @@ def visualize_results(model, num_images=5):
 
 # Расчет Fidelity (правильная реализация)
 def calculate_fidelity(model, images, labels, cam_maps):
-    print("\n📊 Вычисляем Fidelity...")
+    print("\nВычисляем Fidelity...")
     
     model.eval()
     fidelities = []
@@ -323,14 +321,14 @@ def calculate_fidelity(model, images, labels, cam_maps):
     mean_fid = np.mean(fidelities)
     var_fid = np.var(fidelities)
     
-    print(f'\n📈 Средняя Fidelity: {mean_fid:.4f}')
-    print(f'📐 Дисперсия Fidelity: {var_fid:.4f}')
+    print(f'\nСредняя Fidelity: {mean_fid:.4f}')
+    print(f'Дисперсия Fidelity: {var_fid:.4f}')
     
     return fidelities, mean_fid, var_fid
 
 # Главная функция
 def main():
-    print("🎯 Запускаем проект...")
+
     
     # Пытаемся загрузить модель или обучаем новую
     try:
@@ -365,14 +363,14 @@ def main():
                 correct += pred.eq(target).sum().item()
         
         accuracy = 100. * correct / len(test_loader.dataset)
-        print(f'📊 Точность загруженной модели: {accuracy:.2f}%')
+        print(f'Точность загруженной модели: {accuracy:.2f}%')
         
         if accuracy < 80.0:
-            print('🔄 Точность ниже 80%, переобучаем модель...')
+            print('Точность ниже 80%, переобучаем модель...')
             model = train_model()
             
     except Exception as e:
-        print(f"🔄 Обучаем новую модель. Причина: {e}")
+        print(f"Обучаем новую модель. Причина: {e}")
         model = train_model()
     
     # Визуализация
@@ -382,12 +380,9 @@ def main():
     fidelities, mean_fid, var_fid = calculate_fidelity(model, images, labels, cam_maps)
     
     # Финальный результат
-    print("\n" + "=" * 50)
-    print("🎉 ПРОЕКТ УСПЕШНО ЗАВЕРШЕН!")
-    print("=" * 50)
-    print(f"📊 Средняя Fidelity: {mean_fid:.4f}")
-    print(f"📈 Дисперсия Fidelity: {var_fid:.4f}")
-    print("💾 Результаты сохранены в 'gradcam_results.png'")
+    print(f"Средняя Fidelity: {mean_fid:.4f}")
+    print(f"Дисперсия Fidelity: {var_fid:.4f}")
+    print("Результаты сохранены в 'gradcam_results.png'")
 
 if __name__ == "__main__":
     main()
