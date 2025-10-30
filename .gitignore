@@ -1,0 +1,18 @@
+
+data/
+*.pt
+*.pth
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+gradcam_results.png
+output/
+results/
+models/
+checkpoints/
+logs/
+experiments/
+
+# OneDrive temp
+~$*
