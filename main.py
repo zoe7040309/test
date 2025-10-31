@@ -36,7 +36,6 @@ class ImprovedCNN(nn.Module):
         self.gradients = None
         self.activations = None
         self.conv3.register_forward_hook(self.forward_hook)
-        # register_backward_hook устарел; используем full_backward_hook
         self.conv3.register_full_backward_hook(self.backward_hook)
 
     def forward_hook(self, module, input, output):
@@ -119,11 +118,11 @@ class GradCAM:
             # Применяем ReLU и ресайзим к размеру изображения
             cam = np.maximum(cam, 0)
             if cam.max() > 0:
-                cam = cam / cam.max()  # Нормализация
+                cam = cam / cam.max()
             else:
                 cam = np.zeros_like(cam)
             
-            # Ресайз до размера исходного изображения с помощью torch
+            # Ресайз до размера исходного изображения
             cam_tensor = torch.from_numpy(cam).float().unsqueeze(0).unsqueeze(0)
             cam_resized = F.interpolate(cam_tensor, size=(28, 28), mode='bilinear', align_corners=False)
             cam = cam_resized.squeeze().numpy()
@@ -160,7 +159,7 @@ def train_model():
         dummy_input = torch.randn(1, 1, 28, 28, device=device)
         _ = model(dummy_input)
     
-    for epoch in range(10):  # Больше эпох для лучшей точности
+    for epoch in range(10):
         model.train()
         total_loss = 0
         for batch_idx, (data, target) in enumerate(train_loader):
@@ -245,7 +244,7 @@ def visualize_results(model, num_images=5):
     images = images.to(device)
     labels = labels.to(device)
     
-    # Получаем предсказания (логиты)
+    # Получаем предсказания
     model.eval()
     with torch.no_grad():
         outputs = model(images)
@@ -282,7 +281,7 @@ def visualize_results(model, num_images=5):
         # Маскированное изображение
         masked_image = apply_mask(images[i].detach().cpu(), cam_maps[i])
         axes[i, 3].imshow(masked_image.squeeze(), cmap='gray')
-        axes[i, 3].set_title('Маскированное изображение')
+        axes[i, 3].set_title('Маска')
         axes[i, 3].axis('off')
     
     plt.tight_layout()
